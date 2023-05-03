@@ -1,0 +1,46 @@
+---
+title: "HURDAT 2023 Data Cleaning"
+author: "Zhongyi Guo"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r}
+df <- read.csv("https://raw.github.coecis.cornell.edu/jsg342/statcomp2023/main/datasets/hurdat2-1851-2022-040723.txt?token=GHSAT0AAAAAAAAANMFJFLLBJ4IEUUAWAUHKZCVQECQ", header = FALSE)
+```
+
+
+
+```{r}
+hurdat <- data.frame(matrix(NA, nrow = 0, ncol = ncol(df) + 2))
+colnames(hurdat) <- c("id", "name", "date", "time","event",
+                      "status", "latitude", "longitude", "max.wind",
+                      "min.pressure", "ne34", "se34","sw34", "nw34", 
+                      "ne50", "se50","sw50", "nw50",
+                      "ne64", "se64","sw64", "nw64", "r.max.wind")
+al.index <- which( substr( df$V1, 1, 2 ) == "AL")
+
+
+accu <- 1
+
+for (al in 2:length(al.index)) {
+  start <- al.index[al - 1] + 1
+  end <- al.index[al] - 1
+  hur_code <- df$V1[start - 1]
+  hur_name <- df$V2[end + 1]
+  incre <- al.index[al] - al.index[al-1] - 1
+  accu0 <- accu+incre-1
+  hurdat[accu:accu0, ] <- cbind(hur_code, hur_name, df[start:end, ])
+  accu <- accu+incre
+}
+hurdat[accu:53972, ] <- cbind(df$V1[al.index[1952]], df$V2[al.index[1952]], df[55899:55924,])
+```
+
+```{r}
+hurdat <- replace(hurdat, hurdat %in% c(-99, -999), NA)
+#Adding numeric latitude and longitude columns
+hurdat$numeric.latitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$latitude))
+hurdat$numeric.longitude <- 360 - as.numeric(gsub("[^0-9\\.]", "", hurdat$longitude))
+
+save(hurdat, file = "hurdat.RData")
+```
