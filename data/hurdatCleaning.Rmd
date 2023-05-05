@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 ```{r}
-df <- read.csv("https://raw.github.coecis.cornell.edu/jsg342/statcomp2023/main/datasets/hurdat2-1851-2022-040723.txt?token=GHSAT0AAAAAAAAANMFJFLLBJ4IEUUAWAUHKZCVQECQ", header = FALSE, na.strings = "")
+df <- read.csv("https://raw.github.coecis.cornell.edu/jsg342/statcomp2023/main/datasets/hurdat2-1851-2022-040723.txt?token=GHSAT0AAAAAAAAANP6TER7C3F5K55R7K7MQZC6SVNQ", header = FALSE, na.strings = "")
 ```
 
 
@@ -42,7 +42,7 @@ hurdat[hurdat == -99] <- NA
 hurdat[hurdat == -999] <- NA
 
 hurdat$numeric.latitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$latitude))
-hurdat$numeric.longitude <- 360 - as.numeric(gsub("[^0-9\\.]", "", hurdat$longitude))
+hurdat$numeric.longitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$longitude)) - 180
 
 save(hurdat, file = "hurdat.RData")
 ```
