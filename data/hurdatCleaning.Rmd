@@ -44,5 +44,5 @@ hurdat[hurdat == -999] <- NA
 hurdat$numeric.latitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$latitude))
 hurdat$numeric.longitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$longitude)) - 180
 
-save(hurdat, file = "hurdat.RData")
+write.csv(hurdat, file = "hurdat.csv", row.names = FALSE)
 ```
