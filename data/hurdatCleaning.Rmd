@@ -20,7 +20,6 @@ colnames(hurdat) <- c("id", "name", "date", "time","event", "status", "latitude"
 
 al.index <- grep("^AL", df$V1)
 
-
 accu <- 1
 for (index in 2:length(al.index)) {
     start <- al.index[index - 1] + 1
@@ -44,5 +43,5 @@ hurdat[hurdat == -999] <- NA
 hurdat$numeric.latitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$latitude))
 hurdat$numeric.longitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$longitude)) - 180
 
-write.csv(hurdat, file = "hurdat.csv", row.names = FALSE)
+save(hurdat, file = "hurdat.RData")
 ```
