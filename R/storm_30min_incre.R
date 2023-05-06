@@ -26,10 +26,7 @@ stormz_30min_incre <- function(storm.id) {
   # subset hurdat based on input ID
   track <- hurdat[
     which(hurdat$id %in% storm.id),
-    c(
-      "id", "date", "time", "numeric.latitude",
-      "numeric.longitude"
-    )
+    c("id", "date", "time", "numeric.latitude", "numeric.longitude")
   ]
 
   # create a new empty dataframe for later appending
