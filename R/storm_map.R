@@ -9,30 +9,20 @@
 #' @examples
 #' my_function(arg1 = 1, arg2 = "abc")
 storm_map <- function(storm.ids) {
-    library(tidyverse)
-    library(ggplot2)
-    library(maps)
-    path <- system.file("data", "hurdat.RData", package = "hurdatPro")
-    load(path)
+  library(ggplot2)
+  library(maps)
 
-    hurdat_filtered <- hurdat %>% filter(id %in% storm.ids)
+  # load data
+  # path <- system.file("data", "hurdat.RData", package = "hurdatPro")
 
-    map <- map("world", c("USA", "Canada"), fill = TRUE, col = "gray80", plot = FALSE)
+  track <- hurdat[hurdat$id %in% storm.ids, ]
+  map_states <- map_data("state")
 
+  p <- ggplot(track, aes(x = numeric.longitude, y = numeric.latitude, group = id, color = max.wind)) + geom_path(size = 1) + scale_color_gradient(low = "blue", high = "red") + theme_minimal() + theme(panel.grid = element_blank())
+  p <- p + coord_fixed(1.3)
+  p <- p + geom_polygon(data = map_states, aes(x = long, y = lat, group = group), fill = NA, color = "gray50")
+  p <- p + labs(title = "Storm Tracks")
+  p <- p + labs(x = "Longitude", y = "Latitude")
 
-    p <- ggplot() +
-      geom_path(data = hurdat_filtered, aes(x = numeric.longitude,
-                                            y = numeric.latitude,
-                                            group = id,
-                                            color = "red"))
-      coord_map() +
-      theme_void() +
-      xlim(range(map$range[1, ])) +
-      ylim(range(map$range[2, ])) +
-      labs(title="Storm Tracks", x="Longitude", y="Latitude") +
-      scale_color_discrete(name="Storm ID")
-    p <- p + borders("state", colour = "gray50", size = 0.5) +
-      borders("country", colour = "gray50", size = 0.5)
-    return(p)
-
+  return(p)
 }
