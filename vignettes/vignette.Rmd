@@ -1,0 +1,31 @@
+---
+title: "vignette"
+author: "Zhongyi Guo & He Zhang"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+
+3. Create a dataframe that has one row for each individual storm, with the 
+following columns:
+
+```{r}
+
+library(tidyverse)
+
+
+hurdat_grouped <- hurdat %>% group_by(id) %>% group_split()
+
+new_dat <- data.frame()
+
+for (list in hurdat_grouped) {
+  id <- list$id[1]
+  name <- list$name[1]
+  max.wind <- max(list$max.wind)
+  min.pressure <- min(list$min.pressure)
+  # landfall <- 
+  # cyclone energy <-
+  # new_dat <- rbind(new_dat, c())
+  break
+}
+```

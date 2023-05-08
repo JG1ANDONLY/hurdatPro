@@ -1,0 +1,33 @@
+#' dataframe that contains information about
+#'
+#' A dataset with
+#'
+#' @format a dataframe with 53972 rows and 25 columns
+#' \describe{
+#'     \item{id}{}
+#'     \item{name}{}
+#'     \item{date}{}
+#'     \item{time}{}
+#'     \item{event}{}
+#'     \item{status}{}
+#'     \item{latitude}{}
+#'     \item{longitude}{}
+#'     \item{max.wind}{}
+#'     \item{min.pressure}{}
+#'     \item{ne34}{}
+#'     \item{se34}{}
+#'     \item{sw34}{}
+#'     \item{nw34}{}
+#'     \item{ne50}{}
+#'     \item{se50}{}
+#'     \item{sw50}{}
+#'     \item{nw50}{}
+#'     \item{ne64}{}
+#'     \item{se64}{}
+#'     \item{sw64}{}
+#'     \item{nw64}{}
+#'     \item{r.max.wind}{}
+#'     \item{numeric.latitude}{}
+#'     \item{numeric.longitude}{}
+#' }
+"hurdat"

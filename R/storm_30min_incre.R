@@ -21,7 +21,8 @@ stormz_30min_incre <- function(storm.id) {
   }
 
   # load data
-  # hurdat <- readRDS(system.file("data/hurdat.RData", package = "hurdatPro"))
+  devtools::document()
+  # load
 
   # subset hurdat based on input ID
   track <- hurdat[

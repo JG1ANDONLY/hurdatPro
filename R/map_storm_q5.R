@@ -14,13 +14,13 @@ map_storm_q5 <- function(stormid, date, time){
   #64knots
   x64 <- get_coord_stormmap(df, "64")$x
   y64 <- get_coord_stormmap(df, "64")$y
-  
+
   #generate map
   library(ggplot2)
   library(maps)
   map_projection <- "+proj=longlat +datum=WGS84"
   world_map <- map_data("world")
-  us_map <- map_data("state")a
+  us_map <- map_data("state")
   map <- ggplot() +
     # Add world map
     geom_map(data = world_map, map = world_map, aes(map_id = region),
@@ -45,5 +45,5 @@ map_storm_q5 <- function(stormid, date, time){
     xlim(pos[1]-5, pos[1]+5) +
     ylim(pos[2]-5, pos[2]+5)
   return(map)
-  
+
 }
