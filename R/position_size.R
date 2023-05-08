@@ -1,13 +1,18 @@
-#' Brief description of the function
+#' Given the point position of a storm, get the coordinate of the position of
+#' the storm based on the moving distance and moving angle.
 #'
-#' Detailed description of the function.
+#' @param pos0, the coordinate of the original point position of a storm
+#' @param dist, moving distnce
+#' @param ang, angle of the moving storm
 #'
-#' @param arg1 Description of argument 1.
-#' @param arg2 Description of argument 2.
-#' @return Description of the return value.
-#' @export
+#' @return pos, a vector contains x-coordinate and y-coordinate of the next
+#' position of the storm
+#'
+#'
 #' @examples
-#' my_function(arg1 = 1, arg2 = "abc")
+#' pos_next <- pos_next(c(-50,30), 10, 45)
+#
+#' @export pos
 
 pos_next <- function(pos0, dist, ang){
   ang_rad <- ang * pi/180
@@ -33,16 +38,16 @@ track_coords <- function(pos, dis0, ang0, dis1, ang1){
 }
 
 get_coord_stormmap = function(df, knots){
-  df$numeric.longitude <- 180 - df$numeric.longitude
-  pos <- c(df$numeric.latitude, df$numeric.latitude)
-  ne <- paste("ne", knots, sep = "")
-  se <- paste("se", knots, sep = "")
-  sw <- paste("sw", knots, sep = "")
-  nw <- paste("nw", knots, sep = "")
-  coordE <- track_coords(pos, df$ne, 45, df$se, -45 )
-  coordS <- track_coords(pos, df$se, -45, df$sw34, -135 )
-  coordW <- track_coords(pos, df$sw34, -135, df$nw34, 135 )
-  coordN <- track_coords(pos, df$nw34, 135, df$ne34, 45 )
+  pos <- c(df$numeric.longitude, df$numeric.latitude)
+  nek <- paste("ne", knots, sep = "")
+  sek <- paste("se", knots, sep = "")
+  swk <- paste("sw", knots, sep = "")
+  nwk <- paste("nw", knots, sep = "")
+  options(digits = 10)
+  coordE <- track_coords(pos, df[nek], 45, df[sek], -45 )
+  coordS <- track_coords(pos, df[sek], -45, df[swk], -135 )
+  coordW <- track_coords(pos, df[swk], -135, df[nwk], 135 )
+  coordN <- track_coords(pos, df[nwk], 135, df[nek], 45 )
   x <- c(coordE$long, coordS$long, coordW$long,coordN$long)
   y <- c(coordE$lat, coordS$lat, coordW$lat,coordN$lat)
   storm_coord <- data.frame(x = numeric(404), y = numeric(404))
@@ -54,9 +59,10 @@ get_coord_stormmap = function(df, knots){
 position_size <- function(stormid, date, time){
   #get the line of the dataframe which contains the nominated info
   datnew = hurdat
-  df <- subset(hurdat, id == stormid&time == time&date == date)
-  df$numeric.longitude <- 180 - df$numeric.longitude
-  pos <- c(df$numeric.latitude, df$numeric.latitude)
+  df <- datnew[which(datnew$id == stormid), ]
+  df <- df[which(df$time == time), ]
+  df <- df[which(df$date == date),]
+  pos <- c(df$numeric.longitude, df$numeric.latitude)
   #50knots
   x34 <- get_coord_stormmap(df, "34")$x
   y34 <- get_coord_stormmap(df, "34")$y
@@ -76,25 +82,27 @@ position_size <- function(stormid, date, time){
   map <- ggplot() +
     # Add world map
     geom_map(data = world_map, map = world_map, aes(map_id = region),
-             fill = "lightgrey", color = "black", size = 0.2) +
+             fill = "white", color = "black", size = 0.2) +
     # Add US state map
     geom_map(data = us_map, map = us_map, aes(map_id = region),
-             fill = "white", color = "black", size = 0.2)+
+             fill = "grey", color = "black", size = 0.2)+
     # Add 34 knot, 50 knot, 64 knot
     geom_polygon(data = data.frame(x34,y34),
-                 aes(x = x34, y = y34, color="34"),
+                 aes(x = x34, y = y34, color="34knot"),
                  fill = NA, size = 1)+
     geom_polygon(data = data.frame(x50,y50),
-                 aes(x = x50, y = y50, color="50"),
+                 aes(x = x50, y = y50, color="50knot"),
                  fill = NA, size = 1)+
     geom_polygon(data = data.frame(x64,y64),
-                 aes(x = x64, y = y64, color="64"),
+                 aes(x = x64, y = y64, color="64knot"),
                  fill = NA, size = 1)+
     geom_point(data = data.frame(pos[1],pos[2]),
-               aes(x = pos[1], y = pos[2], color="center"), size = 5)+
+               aes(x = pos[1], y = pos[2], color="position"), size = 3)+
+    ggtitle("Storm position and size")+
     xlab("Longitude") +
     ylab("Latitude") +
     xlim(pos[1]-5, pos[1]+5) +
     ylim(pos[2]-5, pos[2]+5)
   return(map)
+
 }

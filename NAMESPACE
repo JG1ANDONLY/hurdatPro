@@ -3,6 +3,6 @@
 export(cyclone_energy)
 export(pos)
 export(pos_next)
+export(storm_30min_incre)
 export(storm_landfall)
 export(storm_map)
-export(stormz_30min_incre)

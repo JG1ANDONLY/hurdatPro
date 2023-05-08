@@ -8,31 +8,28 @@
 #' @export
 #' @examples
 #' my_function(arg1 = 1, arg2 = "abc")
-cyclone_energy <- function(storm.ids) {
-  library(tidyverse)
-  library(ggplot2)
-  library(maps)
-  path <- system.file("data", "hurdat.RData", package = "hurdatPro")
-  load(path)
-
-  hurdat_filtered <- hurdat %>% filter(id %in% storm.ids)
-
-  map <- map("world", c("USA", "Canada"), fill = TRUE, col = "gray80", plot = FALSE)
-
-
-  p <- ggplot() +
-    geom_path(data = hurdat_filtered, aes(x = numeric.longitude,
-                                          y = numeric.latitude,
-                                          group = id,
-                                          color = "red"))
-  coord_map() +
-    theme_void() +
-    xlim(range(map$range[1, ])) +
-    ylim(range(map$range[2, ])) +
-    labs(title="Storm Tracks", x="Longitude", y="Latitude") +
-    scale_color_discrete(name="Storm ID")
-  p <- p + borders("state", colour = "gray50", size = 0.5) +
-    borders("country", colour = "gray50", size = 0.5)
-  return(p)
-
+cyclone_energy <- function(stormid) {
+  if (length(stormid) == 1){
+    # Create df storing storm data matching the input storm id
+    df <- hurdat[which(hurdat$id %in% stormid),]
+    df <- df[df$time %in% c("0000", "0600", "1200", "1800"), ]
+    df$max.wind <- as.numeric(df$max.wind)
+    # Calculate ACE
+    max.wind.sqr <- (df$max.wind)^2
+    ace_energy <- sum(na.omit(max.wind.sqr))* 10^(-4)
+  }else{
+    # Create a vector energy_list to store ace_energy with different stormid
+    energy_list <- c()
+    for (i in 1:length(stormid)){
+      df <- hurdat[which(hurdat$id %in% stormid[i]),]
+      df <- df[df$time %in% c("0000", "0600", "1200", "1800"), ]
+      df$max.wind <- as.numeric(df$max.wind)
+      # Calculate ACE
+      max.wind.sqr <- sum((df$max.wind)^2)
+      energy <- sum(na.omit(max.wind.sqr))* 10^(-4)
+      energy_list[i] <- energy
+    }
+    ace_energy <- data.frame("stormid" = stormid, "ace_energy" = energy_list)
+  }
+  return(ace_energy)
 }

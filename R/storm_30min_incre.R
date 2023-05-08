@@ -8,7 +8,7 @@
 #' @export
 #' @examples
 #' my_function(arg1 = 1, arg2 = "abc")
-stormz_30min_incre <- function(storm.id) {
+storm_30min_incre <- function(storm.id) {
 
   # determine if the input is empty
   if (length(storm.id) == 0) {
@@ -21,7 +21,7 @@ stormz_30min_incre <- function(storm.id) {
   }
 
   # load data
-  devtools::document()
+  # devtools::document()
   # load
 
   # subset hurdat based on input ID
