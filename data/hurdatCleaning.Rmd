@@ -40,6 +40,8 @@ hurdat[53947:53972, ] <- cbind(df$V1[al.index[1952]], df$V2[al.index[1952]],
 hurdat[hurdat == -99] <- NA
 hurdat[hurdat == -999] <- NA
 
+hurdat$time <- trimws(hurdat$time)
+
 hurdat$numeric.latitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$latitude))
 hurdat$numeric.longitude <- as.numeric(gsub("[^0-9\\.]", "", hurdat$longitude)) - 180
 

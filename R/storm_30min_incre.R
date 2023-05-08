@@ -39,7 +39,6 @@ stormz_30min_incre <- function(storm.id) {
 
   # loop through splitted dataframe
   for (eachTrack in track_list) {
-    eachTrack$time <- trimws(eachTrack$time)
     date_list <- split(eachTrack, eachTrack$date)
     for (eachDate in date_list) {
       eachDate <- rbind(eachDate, c(
