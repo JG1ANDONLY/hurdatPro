@@ -18,12 +18,12 @@
 storm_landfall <- function(storm.ids) {
   data("hurdat")
   # determine if the input is empty
-  if (length(storm.id) == 0) {
+  if (length(storm.ids) == 0) {
     stop("The input storm ID cannot be empty")
   }
 
   # determine if the input is a valid storm ID
-  if (!all(storm.id %in% hurdat$id)) {
+  if (!all(storm.ids %in% hurdat$id)) {
     stop("At least 1 value of the input is a valid storm ID.")
   }
 

@@ -1,13 +1,17 @@
 Package: hurdatPro
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
-Authors@R:
+Authors@R: c(
     person(given = "Zhongyi", family = "Guo", email = "zg268@cornell.edu", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = "You can also find me at guozy@stanford.edu"),
+person(given = "He", family = "Zhang", email = "hz434@cornell.edu", role = c("aut", "cre")))
 Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 Depends: R (>= 2.10)
+Imports:
+  ggplot2 (>= 3.3.0),
+  maps (>= 3.3.0)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

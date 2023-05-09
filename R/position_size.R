@@ -17,31 +17,12 @@
 #' @import maps
 #'
 #' @examples
-#' position_size("AL182012", "20190527", "1200")
+#' position_size("AL182012", "20121029", "2100")
 #'
 #' @export
 
-get_coord_stormmap = function(df, knots){
-  data("hurdat")
-  pos <- c(df$numeric.longitude, df$numeric.latitude)
-  nek <- paste("ne", knots, sep = "")
-  sek <- paste("se", knots, sep = "")
-  swk <- paste("sw", knots, sep = "")
-  nwk <- paste("nw", knots, sep = "")
-  options(digits = 10)
-  coordE <- track_coords(pos, df[nek], 45, df[sek], -45 )
-  coordS <- track_coords(pos, df[sek], -45, df[swk], -135 )
-  coordW <- track_coords(pos, df[swk], -135, df[nwk], 135 )
-  coordN <- track_coords(pos, df[nwk], 135, df[nek], 45 )
-  x <- c(coordE$long, coordS$long, coordW$long,coordN$long)
-  y <- c(coordE$lat, coordS$lat, coordW$lat,coordN$lat)
-  storm_coord <- data.frame(x = numeric(404), y = numeric(404))
-  storm_coord$x <- x
-  storm_coord$y <- y
-  return(storm_coord)
-}
-
 position_size <- function(stormid, date, time){
+  data("hurdat")
   # determine if the input is empty
   if (length(stormid) == 0) {
     stop("The input storm ID cannot be empty")
@@ -122,4 +103,23 @@ track_coords <- function(pos, dis0, ang0, dis1, ang1){
     ang <- ang - angdel
   }
   return(df)
+}
+
+get_coord_stormmap = function(df, knots){
+  pos <- c(df$numeric.longitude, df$numeric.latitude)
+  nek <- paste("ne", knots, sep = "")
+  sek <- paste("se", knots, sep = "")
+  swk <- paste("sw", knots, sep = "")
+  nwk <- paste("nw", knots, sep = "")
+  options(digits = 10)
+  coordE <- track_coords(pos, df[nek], 45, df[sek], -45 )
+  coordS <- track_coords(pos, df[sek], -45, df[swk], -135 )
+  coordW <- track_coords(pos, df[swk], -135, df[nwk], 135 )
+  coordN <- track_coords(pos, df[nwk], 135, df[nek], 45 )
+  x <- c(coordE$long, coordS$long, coordW$long,coordN$long)
+  y <- c(coordE$lat, coordS$lat, coordW$lat,coordN$lat)
+  storm_coord <- data.frame(x = numeric(404), y = numeric(404))
+  storm_coord$x <- x
+  storm_coord$y <- y
+  return(storm_coord)
 }
