@@ -194,6 +194,11 @@ The negative correlation between maximum sustained wind speed and minimum pressu
 **Define Question:**
 The question "Is the number of landfalling hurricanes increasing over time?" is asking whether there is a statistically significant trend in the number of hurricanes that make landfall on coastal regions over time. We want to break down the data by year.
 ```{r}
+# Create a new dataframe hurdat_year recording storm data by year
+hurdat_year <- hurdat
+hurdat_year$date <- substring(hurdat_year$date,1,4)
+unique_year <- unique(hurdat_year$date)
+yearly_landfall <-
 # Get Number of Landfall per year 
 for (year in unique_year){
     pattern <- paste("^", year, sep = "")
@@ -260,12 +265,9 @@ abline(model, col = "red", lwd = 2)
 **Define Question:**
 To see the trend of the the sum of accumulated cyclone energy of storms in each year 
 ```{r}
-# Create a new dataframe hurdat_year recording storm data by year
-hurdat_year <- hurdat
-hurdat_year$date <- substring(hurdat_year$date,1,4)
+
 # Create vector unique_id store unique ids in each year 
 unique_id <- c()
-unique_year <- unique(hurdat_year$date)
 ace_data <- c()
 for (i in unique_year){
   df <- hurdat_year[which(hurdat_year$date == i),]
