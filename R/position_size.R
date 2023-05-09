@@ -74,7 +74,7 @@ position_size <- function(stormid, date, time){
                  fill = NA, linewidth = 1)+
     geom_point(data = data.frame(pos[1],pos[2]),
                aes(x = pos[1], y = pos[2], color="position"), size = 3)+
-    ggtitle("Storm position and size")+
+    ggtitle(paste("Storm position and size of", stormid))+
     xlab("Longitude") +
     ylab("Latitude") +
     xlim(-128.5, -63.5) +

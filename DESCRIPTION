@@ -1,12 +1,15 @@
 Package: hurdatPro
-Title: What the Package Does (One Line, Title Case)
+Title: Manipulate HURDAT2
 Version: 0.0.0.9000
-Authors@R: Zhongyi Guo [aut, cre], He Zhang [aut, cre]
+Authors@R: c(
+    person("Zhongyi", "Guo", email = "zg268@cornell.edu", role = c("aut", "cre")),
+    person("He", "Zhang", email = "hz434@cornell.edu", role = c("aut")))
 Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 Depends: R (>= 2.10)
+LazyData: true
 Imports:
   ggplot2 (>= 3.3.0),
   maps (>= 3.3.0)

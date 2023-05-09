@@ -4,7 +4,7 @@
 \alias{storm_map}
 \title{Generate a map of storm track(s) given storm ID(s)}
 \usage{
-storm_map(storm.ids)
+storm_map(storm.ids, title = "")
 }
 \arguments{
 \item{storm.ids}{A character or a character vector of valid storm ID(s) to

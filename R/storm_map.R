@@ -13,7 +13,7 @@
 #' # Generate a map of storm tracks for hurricanes with ids "AL052021" and "AL072021"
 #' storm_map(c("AL052021", "AL072021"))
 #' @export
-storm_map <- function(storm.ids) {
+storm_map <- function(storm.ids, title = "") {
   data("hurdat")
   # determine if the input is empty
   if (length(storm.ids) == 0) {
@@ -28,9 +28,6 @@ storm_map <- function(storm.ids) {
   library(ggplot2)
   library(maps)
 
-  # load data
-  # path <- system.file("data", "hurdat.RData", package = "hurdatPro")
-
   track <- hurdat[hurdat$id %in% storm.ids, ]
   map_states <- map_data("state")
 
@@ -43,7 +40,11 @@ storm_map <- function(storm.ids) {
     coord_fixed(1.3) +
     geom_polygon(data = map_states, aes(x = long, y = lat, group = group),
                  fill = NA, color = "gray50") +
-    labs(title = paste("Storm", storm.ids, "Track")) +
     labs(x = "Longitude", y = "Latitude")
+  if (title == "") {
+    p <- p + labs(title = paste("Storm", storm.ids, "Track"))
+  } else {
+    p <- p + labs(title = title)
+  }
   return(p)
 }

@@ -2,48 +2,196 @@
 title: "vignette"
 author: "Zhongyi Guo & He Zhang"
 date: "`r Sys.Date()`"
-output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output: rmarkdown::html_vignette
 ---
 
+```{r}
+suppressMessages(devtools::load_all())
+suppressMessages(library(ggplot2))
+suppressMessages(library(tidyverse))
+suppressMessages(library(maps))
+suppressMessages(library(forecast))
+data("hurdat")
+```
+
+1. Plot the tracks of the storms in 2020, 2021, and 2022 in 3 separate plots. Your plots will be graded for how easy they are to decipher and how much information they display. Include, for example, some way to identify which storm each track belongs to.
+
+```{r}
+# get hurdat date in 2020, 2021 and 2022
+hurdat20 <- hurdat[grepl("^2020", hurdat$date), ]
+hurdat21 <- hurdat[grepl("^2021", hurdat$date), ]
+hurdat22 <- hurdat[grepl("^2022", hurdat$date), ]
+```
+
+```{r}
+# tracks of the storms in 2020
+storm_map(hurdat20$id, title = "All Storm Tracks in 2020")
+```
+```{r}
+# tracks of the storms in 2021
+storm_map(hurdat21$id, title = "All Storm Tracks in 2021")
+```
+```{r}
+# tracks of the storms in 2022
+storm_map(hurdat22$id, title = "All Storm Tracks in 2022")
+```
+
+2. Plot the position and size of hurricanes Katrina (2005), Sandy (2012), Harvey (2017), and Ian (2022) when they made landfall. If there are multiple landfalls, pick the strongest landfall that occurred in the US. Include the storm tracks in your plot if you can. You can put this all on one plot if it’s not too messy.
+
+```{r}
+# Get storm data of hurricanes Katrina (2005), Sandy (2012) and Harvey (2017)
+hurdat05 <- hurdat[grepl("^2005", hurdat$date), ]
+hurdat05k <- hurdat05[grepl("katrina", hurdat05$name, ignore.case = TRUE),]
+
+hurdat12 <- hurdat[grepl("^2012", hurdat$date), ]
+hurdat12s <- hurdat12[grepl("Sandy", hurdat12$name, ignore.case = TRUE),]
+
+hurdat17 <- hurdat[grepl("^2017", hurdat$date), ]
+hurdat17h <- hurdat17[grepl("Harvey", hurdat17$name, ignore.case = TRUE),]
+
+hurdat22 <- hurdat[grepl("^2022", hurdat$date), ]
+hurdat22I <- hurdat22[grepl("Ian", hurdat22$name, ignore.case = TRUE),]
+```
+
+```{r}
+# Return a dataframe storing storms that made US landfall 
+if_landfall <- function(df){
+  index <- c()
+  for (i in 1:nrow(df)){
+  index <- append(index,landfall_pos(df$id[i], df$date[i], df$time[i]))
+  }
+  df <- df[which(index == TRUE),]
+  return(df)
+}
+```
+```{r}
+# Get storm tracks that made landfall
+hurdat05k <- if_landfall(hurdat05k)
+hurdat12s <- if_landfall(hurdat12s)
+hurdat17h <- if_landfall(hurdat17h)
+hurdat22I <- if_landfall(hurdat22I)
+```
+
+```{r}
+# Get storm tracks with max landfall 
+hurdat05k <- hurdat05k[which(hurdat05k$max.wind == max(hurdat05k$max.wind)),]
+hurdat12s <- hurdat12s[which(hurdat12s$max.wind == max(hurdat12s$max.wind)),]
+hurdat17h <- hurdat17h[which(hurdat17h$max.wind == max(hurdat17h$max.wind)),]
+hurdat22I <- hurdat22I[which(hurdat22I$max.wind == max(hurdat22I$max.wind)),]
+```
+```{r}
+# Katrina (2005) (there are NA in the first row)
+position_size(hurdat05k$id[2], hurdat05k$date[2], hurdat05k$time[2])
+```
+```{r}
+# Sandy (2012) 
+position_size(hurdat12s$id, hurdat12s$date, hurdat12s$time)
+```
+```{r}
+# Harvey (2017)
+position_size(hurdat17h$id, hurdat17h$date, hurdat17h$time)
+```
+```{r}
+# Ian (2022)
+position_size(hurdat22I$id, hurdat22I$date, hurdat22I$time)
+```
 
 3. Create a dataframe that has one row for each individual storm, with the following columns:
 • storm id
 • storm name
 • maximum wind speed
 • minimum pressure
-• indicator for whether it made landfall or not • accumulated cyclone energy
+• indicator for whether it made landfall or not 
+• accumulated cyclone energy
 
 ```{r}
+# Get unique ids
+unique_id <- unique(hurdat$id)
 
-library(tidyverse)
-source("storm_landfall.R")
+# Create empty data frame with column names
+new_dat <- data.frame(id = character(),
+                      year = character(),
+                      name = character(),
+                      max.wind = numeric(),
+                      min.pressure = numeric(),
+                      landfall = character(),
+                      cyclone_energy = numeric())
 
-hurdat_grouped <- hurdat %>% group_by(id) %>% group_split()
-
-new_dat <- data.frame()
-
-for (list in hurdat_grouped) {
-  id <- list$id[1]
-  name <- list$name[1]
-  max.wind <- max(list$max.wind)
-  min.pressure <- min(list$min.pressure)
-  landfall <- integer(storm_landfall(id))
-  cyclone_energy <- cyclone_energy(id)
-  new_dat <- rbind(new_dat, c(id, name, max.wind, min.pressure, landfall,
-                              cyclone_energy))
+# Loop through unique ids and extract required data
+for (id in unique_id) {
+  temp <- hurdat[hurdat$id == id, ]
+  name <- unique(temp$name)
+  year <- substr(temp$date[1], 1, 4)
+  max.wind <- max(temp$max.wind)
+  min.pressure <- ifelse(is.na(min(temp$min.pressure)), NA, min(temp$min.pressure))
+  landfall <- storm_landfall(id)
+  cyclone_energy <- cyclone_energy(id)[, 2]
+  new_row <- data.frame(id, year, name, max.wind, min.pressure, landfall,
+                        cyclone_energy)
+  new_dat <- rbind(new_dat, new_row)
 }
-colnames(new_data) <- c("id", "name", "max.wind", "min.pressure", "landfall",
-                              "cyclone_energy")
+
+head(new_dat)
 ```
 
 4. Include two additional plots exploring interesting things you found in the dataset.
 
+**Plot1:** Monthly Frequency Analysis of Hurricanes 
+
+```{r}
+hurdat_freq <- hurdat
+hurdat_freq$month <- substring(hurdat_freq$date,5,6)
+hurdat_freq$year <- substring(hurdat_freq$date,1,4)
+hurdat_freq <- select(hurdat_freq, id, month, year)
+# Create a new dataframe with hurricane frequency by month
+hurdat_freq_counts <- hurdat_freq %>% 
+  group_by(month, year) %>% 
+  count()
+avg_counts <- hurdat_freq_counts %>%
+  group_by(month) %>%
+  summarise(avg_count = mean(n))
+
+ggplot(avg_counts, aes(x = month, y = avg_count)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Average Storm Counts per Month", x = "Month", y = "Average Count")
+```
+
+**Analysis:** 
+
+The plot shows the frequency of hurricanes per month from 1851 - 2022, and it is interesting to note that the frequency of hurricanes reaches its highest point in September. This could be due to a variety of factors, including warm ocean temperatures, low wind shear, and other atmospheric conditions that are conducive to hurricane formation and intensification.
+
+September is typically the peak of hurricane season in the Atlantic Basin, which includes the Gulf of Mexico, the Caribbean Sea, and the western Atlantic Ocean. During this time of year, ocean temperatures are at their warmest, which provides the energy necessary for hurricanes to form and grow. Additionally, wind shear, which can disrupt hurricane formation and intensification, is typically low during this time of year.
+
+The data also shows a secondary peak in hurricane frequency during August, which is also a peak month for hurricane activity in the Atlantic Basin. The combination of warm ocean temperatures, low wind shear, and other favorable atmospheric conditions during these months create an environment that is highly conducive to hurricane formation and intensification.
+
+Overall, the plot provides valuable insight into the timing and frequency of hurricane activity, which can help researchers and emergency responders better prepare for and respond to these dangerous storms.
+
+**Plot2:** Exploring the Correlation Between Maximum Sustained Wind Speed and Minimum Pressure in the Hurdat Dataset
+
+```{r}
+wind_pressure <- na.omit(select(hurdat,max.wind,min.pressure))
+# Create a scatter plot of max.wind vs. min pressure
+ggplot(data = wind_pressure, aes(x = max.wind, y = min.pressure)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Maximum Sustained Wind Speed (knots)", y = "Minimum Pressure (hPa)") +
+  ggtitle("Relationship between maximum wind and minimum pressure")
+
+# Calculate the correlation coefficient between ACE and min pressure
+cor(wind_pressure$max.wind, wind_pressure$min.pressure)
+```
+
+**Analysis:** 
+
+Upon initial examination of the hurdat dataset, we hypothesize that there exists a correlation between the maximum sustained wind speed and the minimum pressure of storms. To investigate this further, we plotted the two variables against each other and observed a strong negative correlation between them.
+
+The negative correlation between maximum sustained wind speed and minimum pressure in the hurdat dataset can be explained by the pressure-wind relationship in tropical storms and hurricanes, where a lower pressure at the center of the storm results in stronger winds.
 
 
 5. Is the number of landfalling hurricanes increasing over time? Define specifically what this question means to you, and do an appropriate statistical analysis to try to answer the question using the hurdat data. This involves writing down a statistical model, identifying parameters of interest, estimating them, and doing inference on them.
-
-We want to break down the data by year.
-
 
 ```{r}
 all_year <- c(1851:2022)
@@ -62,15 +210,15 @@ for (year in all_year){
 year <- names(yearly_landfall)
 num_landfall <- unlist(yearly_landfall)
 plot(year, num_landfall, type="l", xlab="year", ylab="Number of landfalls", main="The trend of each year's landfall")
-
 ```
 
-
+From the plot, we observe that the number of landfalling hurricanes displays an
+increasing trend over years. Thus, we are interested in building a time series 
+regression model.
 
 
 ```{r}
 ts_landfall <- ts(num_landfall, start = 1851, end = 2022)
-library(forecast)
 landfall_rg <- auto.arima(ts_landfall)
 summary(landfall_rg)
 ```
@@ -88,8 +236,95 @@ ggplot() +
 
 
 ```{r}
-position_size("AL172022", "20221110", "1800")
+
+# Subset the data to include only hurricanes that made landfall in the US
+landfall_hurricanes <- new_dat[new_dat$landfall, ]
+
+# Aggregate the data to count the number of landfalling hurricanes per year
+landfall_counts <- aggregate(id ~ year, data = landfall_hurricanes, FUN = function(x) length(unique(x)))
+
+# Fit a Poisson regression model to the landfall counts
+model <- glm(id ~ year, data = landfall_counts, family = poisson)
+
+# Extract the estimated parameters and standard errors
+estimates <- summary(model)$coefficients[, 1:2]
+
+# Calculate the hypothesis test p-value for beta1
+pvalue <- summary(model)$coefficients[2, 4]
+
+# Calculate the 95% confidence intervals for beta0 and beta1
+confint <- confint.default(model)[2:3,]
+
+
+summary(model)
 ```
 
 
+
+6. Is the intensity of tropical cyclones increasing over time? Define specifically what this question means to you, and do an appropriate statistical analysis to try to answer the question using the hurdat data. This involves writing down a statistical model, identifying parameters of interest, estimating them, and doing inference on them.
+
+To see the trend of the the sum of accumulated cyclone energy of storms in each year 
+```{r}
+# Create a new dataframe hurdat_year recording storm data by year
+hurdat_year <- hurdat
+hurdat_year$date <- substring(hurdat_year$date,1,4)
+# Create vector unique_id store unique ids in each year 
+unique_id <- c()
+unique_year <- unique(hurdat_year$date)
+ace_data <- c()
+for (i in unique_year){
+  df <- hurdat_year[which(hurdat_year$date == i),]
+  unique_id <- unique(df$id)
+  ace <- cyclone_energy(unique_id)
+  # Calculate sum of accumulated cyclone energy of storms in each year 
+  ace_data <- append(ace_data, sum(ace[,2]))
+}
+```
+```{r}
+# Create a data frame storming unique years and its ace_data
+ace_year <- data.frame("year" = unique_year, "ace_data" = ace_data)
+ace_year$ace_data <- as.integer(ace_year$ace_data)
+ace_year$year <- as.integer(ace_year$year)
+```
+```{r}
+# Fit a Poisson regression model to the data
+model <- glm(ace_data ~ year, data = ace_year, family = "poisson")
+summary(model)
+```
+
+```{r}
+# Plot the fitted values from the Poisson regression model
+plot(ace_year$year, ace_year$ace_data, type = "l", xlab = "Year", ylab = "ACE", 
+     main = "Intensity of tropical cyclones by year")
+lines(ace_year$year, fitted(model), col = "red", lwd = 2)
+legend("topright", legend = "Fitted values", col = "red", lwd = 2, bty = "n")
+
+```
+**Analysis:** 
+
+Statistical Model: $Yi$ ~ Poisson($λi$) log($λi$) = $β0$ + $β1$ * $ti$
+  -$Yi$: the sum of ACE in year i 
+  -$λi$: the expected value of Yi
+
+log($λi$) = -4.2727199278 + 0.0045817005 * $ti$
+
+The Poisson regression model is used to investigate the relationship between the year and the intensity of tropical cyclones, as measured by accumulated cyclone energy (ACE). 
+
+parameters: year & ace_data
+
+Interperate coefficients: The estimated coefficient for year is 0.0046. This indicates that, on average, the sum of accumulated cyclone energy of storms in each year increases by a factor of exp(0.0046) = 1.0046, or approximately 0.46%, per year.
+
+p-value analysis: p-value of year is very small and the coefficient is 0.0045817005, indicating that there is a statistically significant positive relationship between `year` and `ace_data`. 
+
+Model analysis: The model has a residual deviance of 4688.7 on 170 degrees of freedom, indicating that the model fits the data well. 
+
+Overall, the model suggests that there is evidence of a positive trend in the intensity of tropical cyclones over time, as measured by the accumulated cyclone energy.
+
+
+7. Find a claim made in the media made about tropical cyclones and climate change, and check whether the claim is supported or not by your data. You should pick a claim for which your data has relevant information. Cite the media source. For fun, you can also report what ChatGPT has to say about the claim.
+**Answer:** 
+
+After conducting some research, we were able to confirm that Hurricane Katrina in 2005 made landfall with maximum accumulated cyclone energy on the Mississippi-Alabama border. This finding is consistent with the results obtained from our analysis in Analysis Question 2, where we visualized the accumulated cyclone energy for hurricanes in the Gulf of Mexico region.
+
+APA citation: National Weather Service. (n.d.). Hurricane Katrina. Retrieved from https://www.weather.gov/mob/katrina#:~:text=Known%20for%20its%20storm%20surge,Rosa%20Sound%20in%20northwest%20Florida.
 
