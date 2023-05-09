@@ -1,10 +1,10 @@
 Package: hurdatPro
-Title: Manipulate HURDAT2
+Title: Manipulate HURDAT
 Version: 0.0.0.9000
 Authors@R: c(
     person("Zhongyi", "Guo", email = "zg268@cornell.edu", role = c("aut", "cre")),
     person("He", "Zhang", email = "hz434@cornell.edu", role = c("aut")))
-Description: What the package does (one paragraph).
+Description: hurdatPro handles the HURDAT Atlantic basin tropical cyclone data for data cleaning, analyzing, and visualization. 
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8

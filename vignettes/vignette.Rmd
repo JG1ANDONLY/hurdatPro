@@ -87,6 +87,7 @@ hurdat22I <- hurdat22I[which(hurdat22I$max.wind == max(hurdat22I$max.wind)),]
 # Katrina (2005) (there are NA in the first row)
 position_size(hurdat05k$id[2], hurdat05k$date[2], hurdat05k$time[2])
 ```
+
 ```{r}
 # Sandy (2012) 
 position_size(hurdat12s$id, hurdat12s$date, hurdat12s$time)
@@ -95,6 +96,7 @@ position_size(hurdat12s$id, hurdat12s$date, hurdat12s$time)
 # Harvey (2017)
 position_size(hurdat17h$id, hurdat17h$date, hurdat17h$time)
 ```
+
 ```{r}
 # Ian (2022)
 position_size(hurdat22I$id, hurdat22I$date, hurdat22I$time)
@@ -141,7 +143,6 @@ head(new_dat)
 4. Include two additional plots exploring interesting things you found in the dataset.
 
 **Plot1:** Monthly Frequency Analysis of Hurricanes 
-
 ```{r}
 hurdat_freq <- hurdat
 hurdat_freq$month <- substring(hurdat_freq$date,5,6)
@@ -159,7 +160,6 @@ ggplot(avg_counts, aes(x = month, y = avg_count)) +
   geom_bar(stat = "identity") +
   labs(title = "Average Storm Counts per Month", x = "Month", y = "Average Count")
 ```
-
 **Analysis:** 
 
 The plot shows the frequency of hurricanes per month from 1851 - 2022, and it is interesting to note that the frequency of hurricanes reaches its highest point in September. This could be due to a variety of factors, including warm ocean temperatures, low wind shear, and other atmospheric conditions that are conducive to hurricane formation and intensification.
@@ -171,7 +171,6 @@ The data also shows a secondary peak in hurricane frequency during August, which
 Overall, the plot provides valuable insight into the timing and frequency of hurricane activity, which can help researchers and emergency responders better prepare for and respond to these dangerous storms.
 
 **Plot2:** Exploring the Correlation Between Maximum Sustained Wind Speed and Minimum Pressure in the Hurdat Dataset
-
 ```{r}
 wind_pressure <- na.omit(select(hurdat,max.wind,min.pressure))
 # Create a scatter plot of max.wind vs. min pressure
@@ -183,7 +182,6 @@ ggplot(data = wind_pressure, aes(x = max.wind, y = min.pressure)) +
 # Calculate the correlation coefficient between ACE and min pressure
 cor(wind_pressure$max.wind, wind_pressure$min.pressure)
 ```
-
 **Analysis:** 
 
 Upon initial examination of the hurdat dataset, we hypothesize that there exists a correlation between the maximum sustained wind speed and the minimum pressure of storms. To investigate this further, we plotted the two variables against each other and observed a strong negative correlation between them.
@@ -193,12 +191,11 @@ The negative correlation between maximum sustained wind speed and minimum pressu
 
 5. Is the number of landfalling hurricanes increasing over time? Define specifically what this question means to you, and do an appropriate statistical analysis to try to answer the question using the hurdat data. This involves writing down a statistical model, identifying parameters of interest, estimating them, and doing inference on them.
 
+**Define Question:**
+The question "Is the number of landfalling hurricanes increasing over time?" is asking whether there is a statistically significant trend in the number of hurricanes that make landfall on coastal regions over time. We want to break down the data by year.
 ```{r}
-all_year <- c(1851:2022)
-all_year <- as.character(all_year)
-yearly_landfall <- list()
-
-for (year in all_year){
+# Get Number of Landfall per year 
+for (year in unique_year){
     pattern <- paste("^", year, sep = "")
     index <- grep(year, hurdat$date)
     yearly_hurricane_id <- unique(hurdat[index, ]$id)
@@ -209,60 +206,58 @@ for (year in all_year){
 
 year <- names(yearly_landfall)
 num_landfall <- unlist(yearly_landfall)
-plot(year, num_landfall, type="l", xlab="year", ylab="Number of landfalls", main="The trend of each year's landfall")
-```
-
-From the plot, we observe that the number of landfalling hurricanes displays an
-increasing trend over years. Thus, we are interested in building a time series 
-regression model.
-
-
-```{r}
-ts_landfall <- ts(num_landfall, start = 1851, end = 2022)
-landfall_rg <- auto.arima(ts_landfall)
-summary(landfall_rg)
 ```
 
 ```{r}
-landfall_forecast_values <- forecast(landfall_rg, h = 10)
-library(ggplot2)
-ggplot() +
-  geom_line(aes(x = year, y = num_landfall), data = data.frame(year = 1851:2022, value = num_landfall), color = "blue") +
-  geom_line(aes(x = as.numeric(time(landfall_forecast_values$mean)), y = landfall_forecast_values$mean), color = "red") +
-  geom_ribbon(aes( ymin = landfall_forecast_values$Lo.80, ymax = landfall_forecast_values$Hi.80), alpha = 0.2, fill = "red") +
-  labs(title = "Time Series Regression", x = "Year", y = "Value")
+landfall <- data.frame("year" = year, "yearly_landfall" = num_landfall)
+landfall$year <- as.integer(landfall$year)
+landfall$yearly_landfall <- as.integer(landfall$yearly_landfall)
 ```
 
-
-
 ```{r}
+# Fit linear regression model
+model <- lm(yearly_landfall ~ year, data = landfall)
 
-# Subset the data to include only hurricanes that made landfall in the US
-landfall_hurricanes <- new_dat[new_dat$landfall, ]
-
-# Aggregate the data to count the number of landfalling hurricanes per year
-landfall_counts <- aggregate(id ~ year, data = landfall_hurricanes, FUN = function(x) length(unique(x)))
-
-# Fit a Poisson regression model to the landfall counts
-model <- glm(id ~ year, data = landfall_counts, family = poisson)
-
-# Extract the estimated parameters and standard errors
-estimates <- summary(model)$coefficients[, 1:2]
-
-# Calculate the hypothesis test p-value for beta1
-pvalue <- summary(model)$coefficients[2, 4]
-
-# Calculate the 95% confidence intervals for beta0 and beta1
-confint <- confint.default(model)[2:3,]
-
-
+# Check for significant trend
 summary(model)
 ```
+**Analysis:**
+
+We fit a linear model with year and yearly_landfall. The linear regression model has the form:
+
+yearly_landfall = -146.7 + 0.0818 * year
+
+parameters: year, yearly_landfall
+
+The slope coefficient is 0.0818, indicating the estimated increase in the number of landfall hurricanes per year.
+
+The p-value for the slope coefficient is very small (<2e-16), which indicates strong evidence of a significant linear relationship between year and yearly landfall. The adjusted R-squared value (0.4524) indicates that the linear regression model explains 45.24% of the variation in yearly landfall.
+
+Based on the model, we can conclude that the number of landfalling hurricanes is increasing over time, with an estimated increase of 0.0818 hurricanes per year. This information can be useful for hurricane forecasting and preparation efforts in coastal regions. However, it is important to note that this model is based solely on historical data and is not perfect due to the wired intercept.
+```{r}
+# Perform Mann-Kendall test
+library(Kendall)
+MannKendall(landfall$yearly_landfall)
+```
+**Analysis:**
+The test result shows a tau value of 0.505, which indicates a strong positive trend in the number of landfalling hurricanes over time. The p-value associated with the test is < 2.22e-16, which indicates that there is a significant increasing trend in the number of landfalling hurricanes over time.
+
+```{r}
+# Plot yearly landfall data
+plot(landfall$year, landfall$yearly_landfall, pch = 16, col = "black",
+     xlab = "Year", ylab = "Number of Landfalling Hurricanes",
+     main = "Landfalling Hurricanes Over Time")
+
+# Overlay linear regression line
+abline(model, col = "red", lwd = 2)
+```
+**Analysis:** Taken together, the results of both the linear regression analysis and the Mann-Kendall test provide strong evidence that there is an increasing trend in the number of landfalling hurricanes over time.
 
 
 
 6. Is the intensity of tropical cyclones increasing over time? Define specifically what this question means to you, and do an appropriate statistical analysis to try to answer the question using the hurdat data. This involves writing down a statistical model, identifying parameters of interest, estimating them, and doing inference on them.
 
+**Define Question:**
 To see the trend of the the sum of accumulated cyclone energy of storms in each year 
 ```{r}
 # Create a new dataframe hurdat_year recording storm data by year
@@ -324,7 +319,8 @@ Overall, the model suggests that there is evidence of a positive trend in the in
 7. Find a claim made in the media made about tropical cyclones and climate change, and check whether the claim is supported or not by your data. You should pick a claim for which your data has relevant information. Cite the media source. For fun, you can also report what ChatGPT has to say about the claim.
 **Answer:** 
 
-After conducting some research, we were able to confirm that Hurricane Katrina in 2005 made landfall with maximum accumulated cyclone energy on the Mississippi-Alabama border. This finding is consistent with the results obtained from our analysis in Analysis Question 2, where we visualized the accumulated cyclone energy for hurricanes in the Gulf of Mexico region.
+After conducting some research, we were able to confirm that Hurricane Katrina in 2005 made landfall with maximum accumulated cyclone energy on the Mississippi-Alabama border (National Weather Service.). This finding is consistent with the results obtained from our analysis in Analysis Question 2, where we visualized the accumulated cyclone energy for hurricanes in the Gulf of Mexico region.
 
-APA citation: National Weather Service. (n.d.). Hurricane Katrina. Retrieved from https://www.weather.gov/mob/katrina#:~:text=Known%20for%20its%20storm%20surge,Rosa%20Sound%20in%20northwest%20Florida.
+## Reference
+National Weather Service. (n.d.). Hurricane Katrina. Retrieved from https://www.weather.gov/mob/katrina#:~:text=Known%20for%20its%20storm%20surge,Rosa%20Sound%20in%20northwest%20Florida.
 

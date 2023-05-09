@@ -23,6 +23,7 @@
 
 position_size <- function(stormid, date, time){
   data("hurdat")
+
   # determine if the input is empty
   if (length(stormid) == 0) {
     stop("The input storm ID cannot be empty")
@@ -31,6 +32,23 @@ position_size <- function(stormid, date, time){
   # determine if the input is a valid storm ID
   if (!all(stormid %in% hurdat$id)) {
     stop("At least 1 value of the input is a valid storm ID.")
+  }
+
+  # determine if the input date is valid
+  if (nchar(date) != 8) {
+    stop("The length of input date is not correct")
+  }
+
+  if (typeof(date) != "character") {
+    stop("The type of input date is not correct")
+  }
+
+  if (nchar(time) != 4) {
+    stop("The length of input time is not correct")
+  }
+
+  if (typeof(time) != "character") {
+    stop("The type of input time is not correct")
   }
 
   #get the line of the dataframe which contains the nominated info

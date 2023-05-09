@@ -9,6 +9,9 @@ storm_map(storm.ids, title = "")
 \arguments{
 \item{storm.ids}{A character or a character vector of valid storm ID(s) to
 include in the map.}
+
+\item{title}{An optional character vector for the title of the plot. Default
+is an empty string.}
 }
 \value{
 A ggplot2 object representing the storm tracks map.

@@ -12,7 +12,19 @@
 #' cyclone_energy(c("AL182012", "AL011851"))
 #' @export
 cyclone_energy <- function(stormid) {
+
   data("hurdat")
+
+  # determine if the input is empty
+  if (length(stormid) == 0) {
+    stop("The input storm ID cannot be empty")
+  }
+
+  # determine if the input is a valid storm ID
+  if (!all(stormid %in% hurdat$id)) {
+    stop("At least 1 value of the input is a valid storm ID.")
+  }
+
   # Create a vector energy_list to store ace_energy with different stormid
   energy_list <- c()
   for (i in 1:length(stormid)){

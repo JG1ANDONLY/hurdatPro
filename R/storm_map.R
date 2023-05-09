@@ -5,6 +5,8 @@
 #'
 #' @param storm.ids A character or a character vector of valid storm ID(s) to
 #' include in the map.
+#' @param title An optional character vector for the title of the plot. Default
+#' is an empty string.
 #' @import ggplot2 maps
 #' @return A ggplot2 object representing the storm tracks map.
 #' @examples

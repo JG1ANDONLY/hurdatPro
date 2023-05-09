@@ -16,6 +16,7 @@
 #' @export
 landfall_pos <- function(storm.id, date, time) {
   data("hurdat")
+
   # determine if the input is empty
   if (length(storm.id) == 0) {
     stop("The input storm ID cannot be empty")
