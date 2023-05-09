@@ -20,30 +20,9 @@
 #' position_size("AL182012", "20190527", "1200")
 #'
 #' @export
-pos_next <- function(pos0, dist, ang){
-  ang_rad <- ang * pi/180
-  radii = 6371
-  pos <- c(0,0)
-  pos[2] <- (dist * sin(ang_rad)/ radii) * (360/(2*pi)) + pos0[2]
-  pos[1] <- (dist * cos(ang_rad) / (6371*cos((dist * sin(ang_rad)/ radii))))*(360/(2*pi)) + pos0[1]
-  return(pos)
-}
-
-track_coords <- function(pos, dis0, ang0, dis1, ang1){
-  df <- data.frame(long = numeric(101), lat = numeric(101))
-  dis <- dis0
-  ang <- ang0
-  deldis <- (dis1-dis0)/100
-  angdel <- 90/100
-  for (i in 1:101){
-    df[i,] <- pos_next(pos, dis, ang)
-    dis <- dis + deldis
-    ang <- ang - angdel
-  }
-  return(df)
-}
 
 get_coord_stormmap = function(df, knots){
+  data("hurdat")
   pos <- c(df$numeric.longitude, df$numeric.latitude)
   nek <- paste("ne", knots, sep = "")
   sek <- paste("se", knots, sep = "")
@@ -120,4 +99,27 @@ position_size <- function(stormid, date, time){
     xlim(-128.5, -63.5) +
     ylim(23, 50)
   return(map)
+}
+
+pos_next <- function(pos0, dist, ang){
+  ang_rad <- ang * pi/180
+  radii = 6371
+  pos <- c(0,0)
+  pos[2] <- (dist * sin(ang_rad)/ radii) * (360/(2*pi)) + pos0[2]
+  pos[1] <- (dist * cos(ang_rad) / (6371*cos((dist * sin(ang_rad)/ radii))))*(360/(2*pi)) + pos0[1]
+  return(pos)
+}
+
+track_coords <- function(pos, dis0, ang0, dis1, ang1){
+  df <- data.frame(long = numeric(101), lat = numeric(101))
+  dis <- dis0
+  ang <- ang0
+  deldis <- (dis1-dis0)/100
+  angdel <- 90/100
+  for (i in 1:101){
+    df[i,] <- pos_next(pos, dis, ang)
+    dis <- dis + deldis
+    ang <- ang - angdel
+  }
+  return(df)
 }

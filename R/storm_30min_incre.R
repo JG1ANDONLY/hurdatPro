@@ -12,18 +12,14 @@
 #' @examples
 #' # Generate 30-minute interval tracks for the storm "AL011851"
 #' storm_ids <- "AL011851"
-#' storm_30min_incre("storm_ids")
+#' storm_30min_incre(storm_ids)
 #' # Generate 30-minute interval tracks for the storm "AL011851" and "AL021851"
 #' storm_ids <- c("AL011851", "AL021851")
 #' storm_30min_incre(storm_ids)
-#'
-#' @importFrom hurdat hurdat
-#' @importFrom base seq.POSIXt
 #' @export
-#' @keywords hurricane hurdat storm
 
 storm_30min_incre <- function(storm.id) {
-
+  data("hurdat")
   # determine if the input is empty
   if (length(storm.id) == 0) {
     stop("The input storm ID cannot be empty")
@@ -33,10 +29,6 @@ storm_30min_incre <- function(storm.id) {
   if (!all(storm.id %in% hurdat$id)) {
     stop("At least 1 value of the input is a valid storm ID.")
   }
-
-  # load data
-  # devtools::document()
-  # load
 
   # subset hurdat based on input ID
   track <- hurdat[

@@ -14,6 +14,7 @@
 #' storm_map(c("AL052021", "AL072021"))
 #' @export
 storm_map <- function(storm.ids) {
+  data("hurdat")
   # determine if the input is empty
   if (length(storm.id) == 0) {
     stop("The input storm ID cannot be empty")

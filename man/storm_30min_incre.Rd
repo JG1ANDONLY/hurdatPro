@@ -2,21 +2,27 @@
 % Please edit documentation in R/storm_30min_incre.R
 \name{storm_30min_incre}
 \alias{storm_30min_incre}
-\title{Brief description of the function}
+\title{Generate 30-minute interval tracks for the input storm ID(s)}
 \usage{
 storm_30min_incre(storm.id)
 }
 \arguments{
-\item{arg1}{Description of argument 1.}
-
-\item{arg2}{Description of argument 2.}
+\item{storm.id}{A character or a character vector of valid storm ID(s).}
 }
 \value{
-Description of the return value.
+A dataframe containing the 30-minute interval tracks for each input
+storm ID(s).
 }
 \description{
-Detailed description of the function.
+This function generates 30-minute interval tracks for the input storm ID(s),
+containing corresponding information of id, date, time, numeric.latitude,
+numeric.longitude.
 }
 \examples{
-my_function(arg1 = 1, arg2 = "abc")
+# Generate 30-minute interval tracks for the storm "AL011851"
+storm_ids <- "AL011851"
+storm_30min_incre(storm_ids)
+# Generate 30-minute interval tracks for the storm "AL011851" and "AL021851"
+storm_ids <- c("AL011851", "AL021851")
+storm_30min_incre(storm_ids)
 }

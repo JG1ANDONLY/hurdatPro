@@ -2,21 +2,24 @@
 % Please edit documentation in R/storm_map.R
 \name{storm_map}
 \alias{storm_map}
-\title{Brief description of the function}
+\title{Generate a map of storm track(s) given storm ID(s)}
 \usage{
 storm_map(storm.ids)
 }
 \arguments{
-\item{arg1}{Description of argument 1.}
-
-\item{arg2}{Description of argument 2.}
+\item{storm.ids}{A character or a character vector of valid storm ID(s) to
+include in the map.}
 }
 \value{
-Description of the return value.
+A ggplot2 object representing the storm tracks map.
 }
 \description{
-Detailed description of the function.
+This function generates a map of storm tracks given a storm ID or a vector of
+storm ID(s).
 }
 \examples{
-my_function(arg1 = 1, arg2 = "abc")
+# Generate a map of storm tracks for hurricanes with ID "AL052021"
+storm_map("AL052021")
+# Generate a map of storm tracks for hurricanes with ids "AL052021" and "AL072021"
+storm_map(c("AL052021", "AL072021"))
 }

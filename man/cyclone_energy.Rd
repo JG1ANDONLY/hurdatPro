@@ -2,21 +2,23 @@
 % Please edit documentation in R/cyclone_energy.R
 \name{cyclone_energy}
 \alias{cyclone_energy}
-\title{Brief description of the function}
+\title{Compute Accumulated Cyclone Energy for given storm(s)}
 \usage{
-cyclone_energy(storm.ids)
+cyclone_energy(stormid)
 }
 \arguments{
-\item{arg1}{Description of argument 1.}
-
-\item{arg2}{Description of argument 2.}
+\item{stormid}{A character or a character vector of storm IDs in the HURDAT
+dataset. The ID should be in the format similar to "AL182012" or a vector
+of multiple IDs.}
 }
 \value{
-Description of the return value.
+A data frame with storm ID(s) and corresponding ACE value(s).
 }
 \description{
-Detailed description of the function.
+This function calculates the Accumulated Cyclone Energy (ACE) of a given set
+of storm(s) by their storm ID in the HURDAT dataset.
 }
 \examples{
-my_function(arg1 = 1, arg2 = "abc")
+cyclone_energy(c("AL182012"))
+cyclone_energy(c("AL182012", "AL011851"))
 }

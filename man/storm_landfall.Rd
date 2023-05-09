@@ -2,21 +2,29 @@
 % Please edit documentation in R/storm_landfall.R
 \name{storm_landfall}
 \alias{storm_landfall}
-\title{Brief description of the function}
+\title{Identify if storm(s) landfell within the border of the United States}
 \usage{
 storm_landfall(storm.ids)
 }
 \arguments{
-\item{arg1}{Description of argument 1.}
-
-\item{arg2}{Description of argument 2.}
+\item{storm.ids}{A character or a character vector of storm IDs}
 }
 \value{
-Description of the return value.
+A logical vector indicating whether each storm landfell within the
+border of the United States
 }
 \description{
-Detailed description of the function.
+This function takes in a storm ID or a vector of storm IDs and identifies
+if each storm landfell within the border of the United States.
 }
 \examples{
-my_function(arg1 = 1, arg2 = "abc")
+# Identify if the storm "AL052005" landfell within the border of the United States
+storm_ids <- "AL052005"
+storm_landfall(storm_ids)
+# Identify which storms landfell within the border of the United States
+storm_ids <- c("AL052005", "AL062005", "AL072005")
+storm_landfall(storm_ids)
 }
+\keyword{hurricane}
+\keyword{landfall}
+\keyword{storm}

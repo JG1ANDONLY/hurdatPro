@@ -6,9 +6,7 @@
 #' @param storm.ids A character or a character vector of storm IDs
 #' @return A logical vector indicating whether each storm landfell within the
 #' border of the United States
-#' @importFrom sp SpatialPoints point.in.polygon
-#' @importFrom maps map
-#' @keywords hurricane storm landfall continental-US
+#' @keywords hurricane storm landfall
 #' @examples
 #' # Identify if the storm "AL052005" landfell within the border of the United States
 #' storm_ids <- "AL052005"
@@ -16,9 +14,9 @@
 #' # Identify which storms landfell within the border of the United States
 #' storm_ids <- c("AL052005", "AL062005", "AL072005")
 #' storm_landfall(storm_ids)
-#'
 #' @export
 storm_landfall <- function(storm.ids) {
+  data("hurdat")
   # determine if the input is empty
   if (length(storm.id) == 0) {
     stop("The input storm ID cannot be empty")

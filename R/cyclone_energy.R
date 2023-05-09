@@ -12,6 +12,7 @@
 #' cyclone_energy(c("AL182012", "AL011851"))
 #' @export
 cyclone_energy <- function(stormid) {
+  data("hurdat")
   # Create a vector energy_list to store ace_energy with different stormid
   energy_list <- c()
   for (i in 1:length(stormid)){
