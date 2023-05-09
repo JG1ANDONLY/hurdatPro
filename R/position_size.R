@@ -58,20 +58,23 @@ get_coord_stormmap = function(df, knots){
 
 position_size <- function(stormid, date, time){
   #get the line of the dataframe which contains the nominated info
-  datnew = hurdat
+  datnew <- hurdat
   df <- datnew[which(datnew$id == stormid), ]
   df <- df[which(df$time == time), ]
   df <- df[which(df$date == date),]
   pos <- c(df$numeric.longitude, df$numeric.latitude)
   #50knots
-  x34 <- get_coord_stormmap(df, "34")$x
-  y34 <- get_coord_stormmap(df, "34")$y
+  k34 <- get_coord_stormmap(df, "34")
+  x34 <- k34$x
+  y34 <- k34$y
   #50knots
-  x50 <- get_coord_stormmap(df, "50")$x
-  y50 <- get_coord_stormmap(df, "50")$y
+  k50 <- get_coord_stormmap(df, "50")
+  x50 <- k50$x
+  y50 <- k50$y
   #64knots
-  x64 <- get_coord_stormmap(df, "64")$x
-  y64 <- get_coord_stormmap(df, "64")$y
+  k64 <- get_coord_stormmap(df, "64")
+  x64 <- k64$x
+  y64 <- k64$y
 
   #generate map
   library(ggplot2)
@@ -82,27 +85,23 @@ position_size <- function(stormid, date, time){
   map <- ggplot() +
     # Add world map
     geom_map(data = world_map, map = world_map, aes(map_id = region),
-             fill = "white", color = "black", size = 0.2) +
+             fill = "white", color = "black", linewidth = 0.2) +
     # Add US state map
     geom_map(data = us_map, map = us_map, aes(map_id = region),
-             fill = "grey", color = "black", size = 0.2)+
+             fill = "grey", color = "black", linewidth = 0.2)+
     # Add 34 knot, 50 knot, 64 knot
-    geom_polygon(data = data.frame(x34,y34),
-                 aes(x = x34, y = y34, color="34knot"),
-                 fill = NA, size = 1)+
-    geom_polygon(data = data.frame(x50,y50),
-                 aes(x = x50, y = y50, color="50knot"),
-                 fill = NA, size = 1)+
-    geom_polygon(data = data.frame(x64,y64),
-                 aes(x = x64, y = y64, color="64knot"),
-                 fill = NA, size = 1)+
+    geom_polygon(data = k34, aes(x = x34, y = y34, color="34knot"),
+                 fill = NA, linewidth = 1)+
+    geom_polygon(data = k50, aes(x = x50, y = y50, color="50knot"),
+                 fill = NA, linewidth = 1)+
+    geom_polygon(data = k64, aes(x = x64, y = y64, color="64knot"),
+                 fill = NA, linewidth = 1)+
     geom_point(data = data.frame(pos[1],pos[2]),
                aes(x = pos[1], y = pos[2], color="position"), size = 3)+
     ggtitle("Storm position and size")+
     xlab("Longitude") +
     ylab("Latitude") +
-    xlim(pos[1]-5, pos[1]+5) +
-    ylim(pos[2]-5, pos[2]+5)
+    xlim(-128.5, -63.5) +
+    ylim(23, 50)
   return(map)
-
 }

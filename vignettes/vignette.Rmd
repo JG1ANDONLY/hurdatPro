@@ -6,13 +6,17 @@ output: pdf_document
 ---
 
 
-3. Create a dataframe that has one row for each individual storm, with the 
-following columns:
+3. Create a dataframe that has one row for each individual storm, with the following columns:
+• storm id
+• storm name
+• maximum wind speed
+• minimum pressure
+• indicator for whether it made landfall or not • accumulated cyclone energy
 
 ```{r}
 
 library(tidyverse)
-
+source("storm_landfall.R")
 
 hurdat_grouped <- hurdat %>% group_by(id) %>% group_split()
 
@@ -23,9 +27,69 @@ for (list in hurdat_grouped) {
   name <- list$name[1]
   max.wind <- max(list$max.wind)
   min.pressure <- min(list$min.pressure)
-  # landfall <- 
-  # cyclone energy <-
-  # new_dat <- rbind(new_dat, c())
-  break
+  landfall <- integer(storm_landfall(id))
+  cyclone_energy <- cyclone_energy(id)
+  new_dat <- rbind(new_dat, c(id, name, max.wind, min.pressure, landfall,
+                              cyclone_energy))
 }
+colnames(new_data) <- c("id", "name", "max.wind", "min.pressure", "landfall",
+                              "cyclone_energy")
 ```
+
+4. Include two additional plots exploring interesting things you found in the dataset.
+
+
+
+5. Is the number of landfalling hurricanes increasing over time? Define specifically what this question means to you, and do an appropriate statistical analysis to try to answer the question using the hurdat data. This involves writing down a statistical model, identifying parameters of interest, estimating them, and doing inference on them.
+
+We want to break down the data by year.
+
+
+```{r}
+all_year <- c(1851:2022)
+all_year <- as.character(all_year)
+yearly_landfall <- list()
+
+for (year in all_year){
+    pattern <- paste("^", year, sep = "")
+    index <- grep(year, hurdat$date)
+    yearly_hurricane_id <- unique(hurdat[index, ]$id)
+    landfall_result <- storm_landfall(yearly_hurricane_id)
+    num_landfall <- sum(landfall_result)
+    yearly_landfall[[year]] <- num_landfall
+}
+
+year <- names(yearly_landfall)
+num_landfall <- unlist(yearly_landfall)
+plot(year, num_landfall, type="l", xlab="year", ylab="Number of landfalls", main="The trend of each year's landfall")
+
+```
+
+
+
+
+```{r}
+ts_landfall <- ts(num_landfall, start = 1851, end = 2022)
+library(forecast)
+landfall_rg <- auto.arima(ts_landfall)
+summary(landfall_rg)
+```
+
+```{r}
+landfall_forecast_values <- forecast(landfall_rg, h = 10)
+library(ggplot2)
+ggplot() +
+  geom_line(aes(x = year, y = num_landfall), data = data.frame(year = 1851:2022, value = num_landfall), color = "blue") +
+  geom_line(aes(x = as.numeric(time(landfall_forecast_values$mean)), y = landfall_forecast_values$mean), color = "red") +
+  geom_ribbon(aes( ymin = landfall_forecast_values$Lo.80, ymax = landfall_forecast_values$Hi.80), alpha = 0.2, fill = "red") +
+  labs(title = "Time Series Regression", x = "Year", y = "Value")
+```
+
+
+
+```{r}
+position_size("AL172022", "20221110", "1800")
+```
+
+
+
