@@ -1,14 +1,34 @@
-#' Brief description of the function
+#' Identify if storm(s) landfell within the border of the United States
 #'
-#' Detailed description of the function.
+#' This function takes in a storm ID or a vector of storm IDs and identifies
+#' if each storm landfell within the border of the United States.
 #'
-#' @param arg1 Description of argument 1.
-#' @param arg2 Description of argument 2.
-#' @return Description of the return value.
-#' @export
+#' @param storm.ids A character or a character vector of storm IDs
+#' @return A logical vector indicating whether each storm landfell within the
+#' border of the United States
+#' @importFrom sp SpatialPoints point.in.polygon
+#' @importFrom maps map
+#' @keywords hurricane storm landfall continental-US
 #' @examples
-#' my_function(arg1 = 1, arg2 = "abc")
+#' # Identify if the storm "AL052005" landfell within the border of the United States
+#' storm_ids <- "AL052005"
+#' storm_landfall(storm_ids)
+#' # Identify which storms landfell within the border of the United States
+#' storm_ids <- c("AL052005", "AL062005", "AL072005")
+#' storm_landfall(storm_ids)
+#'
+#' @export
 storm_landfall <- function(storm.ids) {
+  # determine if the input is empty
+  if (length(storm.id) == 0) {
+    stop("The input storm ID cannot be empty")
+  }
+
+  # determine if the input is a valid storm ID
+  if (!all(storm.id %in% hurdat$id)) {
+    stop("At least 1 value of the input is a valid storm ID.")
+  }
+
   library(sp)
   library(maps)
   # Get the boundary polygon of the continental US

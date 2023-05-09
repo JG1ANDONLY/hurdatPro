@@ -1,13 +1,27 @@
-#' Brief description of the function
+#' Generate 30-minute interval tracks for the input storm ID(s)
 #'
-#' Detailed description of the function.
+#' This function generates 30-minute interval tracks for the input storm ID(s),
+#' containing corresponding information of id, date, time, numeric.latitude,
+#' numeric.longitude.
 #'
-#' @param arg1 Description of argument 1.
-#' @param arg2 Description of argument 2.
-#' @return Description of the return value.
-#' @export
+#' @param storm.id A character or a character vector of valid storm ID(s).
+#'
+#' @return A dataframe containing the 30-minute interval tracks for each input
+#' storm ID(s).
+#'
 #' @examples
-#' my_function(arg1 = 1, arg2 = "abc")
+#' # Generate 30-minute interval tracks for the storm "AL011851"
+#' storm_ids <- "AL011851"
+#' storm_30min_incre("storm_ids")
+#' # Generate 30-minute interval tracks for the storm "AL011851" and "AL021851"
+#' storm_ids <- c("AL011851", "AL021851")
+#' storm_30min_incre(storm_ids)
+#'
+#' @importFrom hurdat hurdat
+#' @importFrom base seq.POSIXt
+#' @export
+#' @keywords hurricane hurdat storm
+
 storm_30min_incre <- function(storm.id) {
 
   # determine if the input is empty

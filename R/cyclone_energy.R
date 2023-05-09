@@ -1,13 +1,16 @@
-#' Brief description of the function
+#' Compute Accumulated Cyclone Energy for given storm(s)
 #'
-#' Detailed description of the function.
+#' This function calculates the Accumulated Cyclone Energy (ACE) of a given set
+#' of storm(s) by their storm ID in the HURDAT dataset.
 #'
-#' @param arg1 Description of argument 1.
-#' @param arg2 Description of argument 2.
-#' @return Description of the return value.
-#' @export
+#' @param stormid A character or a character vector of storm IDs in the HURDAT
+#' dataset. The ID should be in the format similar to "AL182012" or a vector
+#' of multiple IDs.
+#' @return A data frame with storm ID(s) and corresponding ACE value(s).
 #' @examples
-#' my_function(arg1 = 1, arg2 = "abc")
+#' cyclone_energy(c("AL182012"))
+#' cyclone_energy(c("AL182012", "AL011851"))
+#' @export
 cyclone_energy <- function(stormid) {
   # Create a vector energy_list to store ace_energy with different stormid
   energy_list <- c()

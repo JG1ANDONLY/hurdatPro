@@ -1,14 +1,29 @@
-#' Brief description of the function
+#' Generate a map of storm track(s) given storm ID(s)
 #'
-#' Detailed description of the function.
+#' This function generates a map of storm tracks given a storm ID or a vector of
+#' storm ID(s).
 #'
-#' @param arg1 Description of argument 1.
-#' @param arg2 Description of argument 2.
-#' @return Description of the return value.
-#' @export
+#' @param storm.ids A character or a character vector of valid storm ID(s) to
+#' include in the map.
+#' @import ggplot2 maps
+#' @return A ggplot2 object representing the storm tracks map.
 #' @examples
-#' my_function(arg1 = 1, arg2 = "abc")
+#' # Generate a map of storm tracks for hurricanes with ID "AL052021"
+#' storm_map("AL052021")
+#' # Generate a map of storm tracks for hurricanes with ids "AL052021" and "AL072021"
+#' storm_map(c("AL052021", "AL072021"))
+#' @export
 storm_map <- function(storm.ids) {
+  # determine if the input is empty
+  if (length(storm.id) == 0) {
+    stop("The input storm ID cannot be empty")
+  }
+
+  # determine if the input is a valid storm ID
+  if (!all(storm.id %in% hurdat$id)) {
+    stop("At least 1 value of the input is a valid storm ID.")
+  }
+
   library(ggplot2)
   library(maps)
 

@@ -1,19 +1,25 @@
-#' Given the point position of a storm, get the coordinate of the position of
-#' the storm based on the moving distance and moving angle.
+#' Map the position and size of a given storm
 #'
-#' @param pos0, the coordinate of the original point position of a storm
-#' @param dist, moving distnce
-#' @param ang, angle of the moving storm
+#' This R function takes the storm ID, date, and time as input and generates a
+#' plot of the storm position and its corresponding size of 34 knots, 50 knots,
+#' and 64 knots on a map. This can be useful for visualizing the intensity and
+#' location of a tropical storm.
 #'
-#' @return pos, a vector contains x-coordinate and y-coordinate of the next
-#' position of the storm
 #'
+#' @param stormid a character representing the hurricane ID in the HURDAT dataset.
+#' The ID should be in this format similar to "AL182012".
+#' @param date a character representing the date in the "YYYYMMDD" format.
+#' @param time a character representing the time in the "HHMM" format
+#'
+#' @return a ggplot object showing the storm's position and size on a map
+#'
+#' @import ggplot2
+#' @import maps
 #'
 #' @examples
-#' pos_next <- pos_next(c(-50,30), 10, 45)
-#
-#' @export pos
-
+#' position_size("AL182012", "20190527", "1200")
+#'
+#' @export
 pos_next <- function(pos0, dist, ang){
   ang_rad <- ang * pi/180
   radii = 6371
@@ -57,6 +63,16 @@ get_coord_stormmap = function(df, knots){
 }
 
 position_size <- function(stormid, date, time){
+  # determine if the input is empty
+  if (length(stormid) == 0) {
+    stop("The input storm ID cannot be empty")
+  }
+
+  # determine if the input is a valid storm ID
+  if (!all(stormid %in% hurdat$id)) {
+    stop("At least 1 value of the input is a valid storm ID.")
+  }
+
   #get the line of the dataframe which contains the nominated info
   datnew <- hurdat
   df <- datnew[which(datnew$id == stormid), ]
